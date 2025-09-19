@@ -1,0 +1,133 @@
+version: '3.8'
+
+services:
+  ##Locust##
+  locust:
+    build: .
+    container_name: locust
+    command: locust -f metrics/locust.py --host=http://nginx --web-host=0.0.0.0
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./metrics:/app/metrics
+      - ./app:/app
+    depends_on:
+      - nginx
+    networks:
+      - app-net
+  
+  ##Base de Datos##
+#  db-init:
+#    build: .
+#    container_name: db-init
+#    command: python -c "from database import init_db; init_db()"
+#    volumes:
+#      #- shared-db:/app/db
+#      - ./app:/app
+#    networks:
+#      - app-net
+
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: products_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpass
+    ports:
+      - "5432:5432"
+    volumes:      
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-net
+
+  ##Replica 1##
+  product-api-1:
+    build: .
+    hostname: product-api-1
+    container_name: product-api-1
+    volumes:
+    #  - shared-db:/app/db
+      - ./app:/app
+    expose:
+      - 8000
+    depends_on:
+      #- db-init
+      - postgres
+    networks:
+      - app-net
+    environment:
+      - INIT_DB=true
+
+  ##Replica 2##
+  product-api-2:
+    build: .
+    hostname: product-api-2
+    container_name: product-api-2
+    volumes:
+    #  - shared-db:/app/db
+      - ./app:/app
+    expose:
+      - 8000
+    depends_on:
+      #- db-init
+      - postgres
+    networks:
+      - app-net
+
+  ##Replica 3##
+  product-api-3:
+    build: .
+    hostname: product-api-3
+    container_name: product-api-3
+    volumes:
+    #  - shared-db:/app/db
+      - ./app:/app
+    expose:
+      - 8000
+    depends_on:
+      #- db-init
+      - postgres
+    networks:
+      - app-net
+
+  ##Replica 4##
+  product-api-4:
+    build: .
+    hostname: product-api-4
+    container_name: product-api-4
+    volumes:
+    #  - shared-db:/app/db
+      - ./app:/app
+    expose:
+      - 8000
+    depends_on:
+      #- db-init
+      - postgres
+    networks:
+      - app-net
+
+  ##Api Gateway NGINX##
+  nginx:
+    image: nginx:latest
+    container_name: nginx-gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - product-api-1
+      - product-api-2
+      - product-api-3
+      - product-api-4
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
+
+volumes:
+  #shared-db: {}
+  pgdata: {}
