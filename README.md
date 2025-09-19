@@ -33,7 +33,20 @@ El entorno se ejecuta en contenedores Docker e incluye:
 ## Ejecutar las Pruebas - Locust
 
 ## Analizar Resultados P95 / P99
+1. Ir a la carpeta raíz del proyecto:
 
+```cd escalabilidad-products-api```
+2. Ingrese a la carpeta de metricas
+
+```cd metrics```
+3. Ejecute el archivo de metricas
+
+```python analyze_metrics.py```
+
+Retornará un resultado como:
+P95: 0.0214s
+P99: 0.0557s
+Success Rate: 100.00%
 
 # Autores
 Karen Tarazona - Felipe Rivera - Andrés Piarpuzan - Juan Pablo Camacho
