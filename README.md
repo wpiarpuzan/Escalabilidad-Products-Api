@@ -26,11 +26,20 @@ El entorno se ejecuta en contenedores Docker e incluye:
 4. Levantar los contenedores:
 
    ```docker-compose up --build```
-5. Revise el estado de salud de la aplicación
+5. En una terminal probar el estado de salud de la aplicación:
 
    ```curl -X GET http://localhost/health -H "Content-Type: application/json" -sS```
 
 ## Ejecutar las Pruebas - Locust
+1. Vaya a la URL:
+
+   [URL Pruebas Locust](http://localhost:8089/)
+2. Configure los valores de Locust:
+
+   ```Users: 400 - Ramp Up: 5 - Advanced Options / Run Time: 2m```
+4. De clic en "Start Swarms" para ejecutar las pruebas
+5. En la pestaña "Charts", verique las imágenes para ver los resultados de las pruebas
+
 
 ## Analizar Resultados P95 / P99
 1. Ir a la carpeta raíz del proyecto:
